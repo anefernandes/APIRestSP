@@ -1,19 +1,11 @@
 package com.therealbatman.ApiRest.endpoint;
 
-import com.therealbatman.ApiRest.model.Entrada;
-import com.therealbatman.ApiRest.model.Funcionario;
-import com.therealbatman.ApiRest.model.Saida;
-import com.therealbatman.ApiRest.model.Visitante;
-import com.therealbatman.ApiRest.repository.EntradaRepository;
-import com.therealbatman.ApiRest.repository.FuncionarioRepository;
-import com.therealbatman.ApiRest.repository.SaidaRepository;
-import com.therealbatman.ApiRest.repository.VisitanteRepository;
+import com.therealbatman.ApiRest.model.*;
+import com.therealbatman.ApiRest.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.print.DocFlavor;
 
 @RestController
 public class Controller {
@@ -25,6 +17,10 @@ public class Controller {
     private FuncionarioRepository fDAO;
     @Autowired
     private VisitanteRepository vDAO;
+    @Autowired
+    private VagaRepository vgDAO;
+
+    //GETS
 
     @GetMapping("/entrada")
     ResponseEntity<?> listE() {
@@ -56,6 +52,18 @@ public class Controller {
         return new ResponseEntity<>(vDAO.getNomeByPlaca(placa), HttpStatus.OK);
     }
 
+    @GetMapping("/vagas")
+    ResponseEntity<?> listVagas() {
+        return new ResponseEntity<>(vgDAO.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/vagas/total")
+    ResponseEntity<?> totalVagas() {
+        return new ResponseEntity<>(vgDAO.getTotal(), HttpStatus.OK);
+    }
+
+    //POSTS
+
     @PostMapping(path = "/funcionario/add")//salva os valores
     public ResponseEntity<?> saveF(@RequestBody Funcionario funcionario) {
         fDAO.save(funcionario);
@@ -74,14 +82,27 @@ public class Controller {
         return new ResponseEntity<>(eDAO.save(entrada), HttpStatus.CREATED);
     }
 
-//    @PutMapping(path = "/funcionario/{id}")
-//    public
-
     @PostMapping(path = "/saida/add")
     public ResponseEntity<?> saveS(@RequestBody Saida saida) {
         sDAO.save(saida);
         return new ResponseEntity<>(sDAO.save(saida), HttpStatus.CREATED);
     }
+
+    @PostMapping(path = "/vagas/add")
+    public ResponseEntity<?> saveVagas(@RequestBody Vagas vagas) {
+        vgDAO.save(vagas);
+        return new ResponseEntity<>(vgDAO.save(vagas), HttpStatus.CREATED);
+    }
+
+
+    //PUT
+    @PutMapping(path = "/atualiza")
+    public ResponseEntity<?> update(@RequestBody Vagas vagas) {
+        vgDAO.save(vagas);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //DELETES
 
     @DeleteMapping(path = "entrada/delete/{id}")
     public ResponseEntity<?> deleteE(@PathVariable Integer id) {
@@ -104,6 +125,12 @@ public class Controller {
     @DeleteMapping(path = "/delete_f/{id}")
     public ResponseEntity<?> deleteF(@PathVariable Integer id) {
         fDAO.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/deletevagas/{id}")
+    public ResponseEntity<?> deleteVagas(@PathVariable Integer id) {
+        vgDAO.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
